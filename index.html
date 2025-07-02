@@ -10,9 +10,18 @@
 </head>
 <body class="bg-gray-100">
     <header class="bg-gray-900 text-white py-4 shadow-lg rounded-b-lg">
-        <div class="container mx-auto px-4 text-center">
-            <img src="/Logo.png" alt="Lika Logo" id="top_logo" class="mx-auto mb-0 h-20">
-            <p class="text-sm text-gray-400">Wednesday, July 2, 2025</p>
+        <div class="container mx-auto px-4 relative flex flex-col items-center">
+            <!-- Logo centered at the top -->
+            <img src="/Logo.png" alt="Lika Logo" id="top_logo" class="mb-2 h-20">
+            <!-- Date positioned below the logo, centered -->
+            <p class="text-sm text-gray-400 mb-4">Wednesday, July 2, 2025</p>
+
+            <!-- Profile Picture/Name at Top Right -->
+            <div class="absolute top-5 right-10 flex items-center space-x-2 p-2 scale-104">
+                <!-- Name on the left side of the profile picture -->
+                <span class="text-white text-sm font-semibold">John Doe</span>
+                <img src="https://placehold.co/40x40/FFFFFF/000000?text=User" alt="Profile Picture" class="w-10 h-10 rounded-full border-2 border-white">
+            </div>
         </div>
         <nav class="bg-gray-800 py-3 mt-4 rounded-b-lg">
             <ul class="flex flex-wrap justify-center space-x-6 md:space-x-10">
