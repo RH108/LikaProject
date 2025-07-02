@@ -1,6 +1,6 @@
 /* Custom styles for a newspaper-like feel */
 body {
-    font-family: 'Inter', sans-serif; /* Using Inter as per instructions */
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; /* Using Inter as per instructions */
     line-height: 1.6;
     color: #333;
     background-color: #f4f4f4;
@@ -8,7 +8,7 @@ body {
 .container {
     max-width: 1200px;
     margin: 20px auto;
-    background-color: #fff;
+    background-color: #ffffff00;
     box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
     border-radius: 8px; /* Rounded corners for the main container */
     overflow: hidden; /* Ensures shadow and border-radius apply correctly */
@@ -46,4 +46,9 @@ body {
 /* Smooth scroll for navigation */
 html {
     scroll-behavior: smooth;
+}
+
+#top_logo {
+    max-width: 20%;
+    max-height: auto;
 }
