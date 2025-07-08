@@ -16,183 +16,87 @@
             <!-- Date positioned below the logo, centered -->
             <p class="text-sm text-gray-400 mb-4">Wednesday, July 2, 2025</p>
 
-            <!-- Profile Picture/Name at Top Right -->
-            <div class="absolute top-5 right-10 flex items-center space-x-2 p-2 scale-104">
-                <!-- Name on the left side of the profile picture -->
-                <span class="text-white text-sm font-semibold">John Doe</span>
-                <img src="https://static.vecteezy.com/system/resources/thumbnails/009/292/244/small/default-avatar-icon-of-social-media-user-vector.jpg" alt="Profile Picture" class="w-10 h-10 rounded-full border-2 border-white">
+            <!-- Profile Picture/Name and Login/Logout at Top Right -->
+            <div class="absolute top-5 right-10 flex items-center space-x-2 p-2 scale-104" id="auth-section">
+                <span id="user-status" class="text-white text-sm font-semibold">Not Logged In</span>
+                <img id="profile-picture" src="https://placehold.co/40x40/FFFFFF/000000?text=User" alt="Profile Picture" class="w-10 h-10 rounded-full border-2 border-white">
+                <button id="login-button" class="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition duration-300 ml-4">Login with Google</button>
+                <button id="logout-button" class="bg-red-600 text-white px-4 py-2 rounded-md hover:bg-red-700 transition duration-300 ml-4 hidden">Logout</button>
             </div>
         </div>
         <nav class="bg-gray-800 py-3 mt-4 rounded-b-lg">
             <ul class="flex flex-wrap justify-center space-x-6 md:space-x-10">
-                <li><a href="#politics" class="text-white hover:text-yellow-400 font-bold text-lg font-times transition duration-300 ease-in-out px-3 py-2 rounded-md">Politics</a></li>
-                <li><a href="#defence" class="text-white hover:text-yellow-400 font-bold text-lg font-times transition duration-300 ease-in-out px-3 py-2 rounded-md">Defence</a></li>
-                <li><a href="#lifestyle" class="text-white hover:text-yellow-400 font-bold font-times text-lg transition duration-300 ease-in-out px-3 py-2 rounded-md">Lifestyle</a></li>
-                <li><a href="#gossips" class="text-white hover:text-yellow-400 font-bold font-times text-lg transition duration-300 ease-in-out px-3 py-2 rounded-md">Gossips</a></li>
+                <li><a href="#politics" class="nav-link text-white hover:text-yellow-400 font-bold text-lg font-times transition duration-300 ease-in-out px-3 py-2 rounded-md">Politics</a></li>
+                <li><a href="#defence" class="nav-link text-white hover:text-yellow-400 font-bold text-lg font-times transition duration-300 ease-in-out px-3 py-2 rounded-md">Defence</a></li>
+                <li><a href="#lifestyle" class="nav-link text-white hover:text-yellow-400 font-bold font-times text-lg transition duration-300 ease-in-out px-3 py-2 rounded-md">Lifestyle</a></li>
+                <li><a href="#gossips" class="nav-link text-white hover:text-yellow-400 font-bold font-times text-lg transition duration-300 ease-in-out px-3 py-2 rounded-md">Gossips</a></li>
             </ul>
         </nav>
     </header>
 
-    <main class="container p-6 md:p-10">
-        <!-- Politics Section -->
-        <section id="politics" class="category-section mb-12 pt-4">
-            <div class="flex justify-between items-center mb-8">
-                <h2 class="category-title text-gray-900 text-left">Politics</h2>
-                <a href="#" class="bg-gray-800 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition duration-300">Read More</a>
-            </div>
-            <div class="flex flex-col lg:flex-row gap-8">
-                <!-- Featured Article -->
-                <article class="news-article bg-white rounded-lg shadow-md hover:shadow-xl transition-shadow duration-300 lg:w-2/3">
-                    <img src="https://res.cloudinary.com/aenetworks/image/upload/c_fill,ar_2,w_3840,h_1920,g_auto/dpr_auto/f_auto/q_auto:eco/v1/donald-trump-gettyimages-687193180?_a=BAVAZGDX0" alt="Article Cover" class="w-full h-64 object-cover rounded-t-lg">
-                    <div class="p-6">
-                        <h3 class="text-gray-900 leading-tight hover:text-blue-700 cursor-pointer">Trump's "Big, Beautiful Bill" Faces House Hurdle After Senate Pass</h3>
-                        <p class="dateline text-gray-600"><em>*Washington D.C.*</em></p>
-                        <p class="text-gray-700">President Donald Trump's controversial "One Big Beautiful Bill Act" has narrowly passed the Republican-controlled Senate, sending it to the House of Representatives for a critical vote. The bill, which seeks to make permanent the 2017 tax cuts and introduce new tax breaks while also implementing deep spending cuts, has added an estimated $3.3 trillion to the national debt, drawing fierce criticism from opponents. Debates are expected to be heated in the House, where the outcome remains uncertain.</p>
-                    </div>
-                </article>
-                <!-- Side Articles -->
-                <div class="flex flex-col gap-8 lg:w-1/3">
-                    <article class="news-article bg-white rounded-lg shadow-md hover:shadow-xl transition-shadow duration-300">
-                        <img src="https://www.euractiv.com/wp-content/uploads/sites/2/2025/07/GettyImages-1236005683.jpg" alt="Article Cover" class="w-full h-40 object-cover rounded-t-lg">
-                        <div class="p-4">
-                            <h3 class="text-gray-900 leading-tight hover:text-blue-700 cursor-pointer text-base">EU Nations Miss Climate Deadline, Funds for Vulnerable at Risk</h3>
-                            <p class="dateline text-gray-600 text-xs"><em>*Brussels*</em></p>
-                            <p class="text-gray-700 text-sm">European Union countries have reportedly missed a crucial climate deadline, potentially jeopardizing funds designated for vulnerable populations...</p>
-                        </div>
-                    </article>
-                    <article class="news-article bg-white rounded-lg shadow-md hover:shadow-xl transition-shadow duration-300">
-                        <img src="https://www.aljazeera.com/wp-content/uploads/2025/07/AFP__20250701__64D26YR__v2__HighRes__TopshotThailandPoliticsGovernment-1751355106.jpg?resize=770%2C513&quality=80" alt="Article Cover" class="w-full h-40 object-cover rounded-t-lg">
-                        <div class="p-4">
-                            <h3 class="text-gray-900 leading-tight hover:text-blue-700 cursor-pointer text-base">Thailand's PM Suspended Amidst Leaked Phone Call Probe</h3>
-                            <p class="dateline text-gray-600 text-xs"><em>*Bangkok*</em></p>
-                            <p class="text-gray-700 text-sm">Thai Prime Minister Paetongtarn Shinawatra has been suspended by the Constitutional Court pending an investigation...</p>
-                        </div>
-                    </article>
-                </div>
-            </div>
-        </section>
-
-        <!-- Defence Section -->
-        <section id="defence" class="category-section mb-12 pt-4">
-            <div class="flex justify-between items-center mb-8">
-                <h2 class="category-title text-gray-900 text-left">Defence</h2>
-                <a href="#" class="bg-gray-800 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition duration-300">Read More</a>
-            </div>
-            <div class="flex flex-col lg:flex-row gap-8">
-                <!-- Featured Article -->
-                <article class="news-article bg-white rounded-lg shadow-md hover:shadow-xl transition-shadow duration-300 lg:w-2/3">
-                    <img src="https://placehold.co/800x400/555/FFF?text=Defence+Featured" alt="Article Cover" class="w-full h-64 object-cover rounded-t-lg">
-                    <div class="p-6">
-                        <h3 class="text-gray-900 leading-tight hover:text-blue-700 cursor-pointer">Romania Secures $2.23 Billion V/SHORAD Defense Deal with Rafael</h3>
-                        <p class="dateline text-gray-600"><em>*Bucharest*</em></p>
-                        <p class="text-gray-700">Romania has finalized a significant $2.23 billion deal with Israel's Rafael Advanced Defense Systems for its Very Short and Short Range Air Defense (V/SHORAD) acquisition program. The agreement marks a major boost to Romania's defensive capabilities, strengthening its air defense systems amidst evolving regional security concerns.</p>
-                    </div>
-                </article>
-                <!-- Side Articles -->
-                <div class="flex flex-col gap-8 lg:w-1/3">
-                    <article class="news-article bg-white rounded-lg shadow-md hover:shadow-xl transition-shadow duration-300">
-                        <img src="https://placehold.co/400x200/777/FFF?text=Defence+News+2" alt="Article Cover" class="w-full h-40 object-cover rounded-t-lg">
-                        <div class="p-4">
-                            <h3 class="text-gray-900 leading-tight hover:text-blue-700 cursor-pointer text-base">US Air Force Axes E-7 Wedgetail Program, A-10 Retirement Planned</h3>
-                            <p class="dateline text-gray-600 text-xs"><em>*Washington D.C.*</em></p>
-                            <p class="text-gray-700 text-sm">The US Air Force has announced the termination of its E-7 Wedgetail early warning aircraft program, signaling a shift...</p>
-                        </div>
-                    </article>
-                    <article class="news-article bg-white rounded-lg shadow-md hover:shadow-xl transition-shadow duration-300">
-                        <img src="https://placehold.co/400x200/999/FFF?text=Defence+News+3" alt="Article Cover" class="w-full h-40 object-cover rounded-t-lg">
-                        <div class="p-4">
-                            <h3 class="text-gray-900 leading-tight hover:text-blue-700 cursor-pointer text-base">Ukrainian Drone Strikes Deep Inside Russia After Record Russian Attacks</h3>
-                            <p class="dateline text-gray-600 text-xs"><em>*Kyiv/Moscow*</em></p>
-                            <p class="text-gray-700 text-sm">A Ukrainian drone has reportedly struck a plant deep inside Russian territory, following what Ukraine describes...</p>
-                        </div>
-                    </article>
-                </div>
-            </div>
-        </section>
-
-        <!-- Lifestyle Section -->
-        <section id="lifestyle" class="category-section mb-12 pt-4">
-            <div class="flex justify-between items-center mb-8">
-                <h2 class="category-title text-gray-900 text-left">Lifestyle</h2>
-                <a href="#" class="bg-gray-800 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition duration-300">Read More</a>
-            </div>
-            <div class="flex flex-col lg:flex-row gap-8">
-                <!-- Featured Article -->
-                <article class="news-article bg-white rounded-lg shadow-md hover:shadow-xl transition-shadow duration-300 lg:w-2/3">
-                    <img src="https://placehold.co/800x400/888/FFF?text=Lifestyle+Featured" alt="Article Cover" class="w-full h-64 object-cover rounded-t-lg">
-                    <div class="p-6">
-                        <h3 class="text-gray-900 leading-tight hover:text-blue-700 cursor-pointer">Inflammaging: Lifestyle Factor, Not Universal Aging Trait, Study Suggests</h3>
-                        <p class="dateline text-gray-600"><em>*New York*</em></p>
-                        <p class="text-gray-700">A new study from Columbia University suggests that "inflammaging," previously considered a universal hallmark of aging, may instead be largely influenced by lifestyle factors. The research indicates that chronic inflammation, often associated with aging, might not be an inevitable part of the human experience and could be mitigated through healthier choices, offering new insights into longevity and well-being.</p>
-                    </div>
-                </article>
-                <!-- Side Articles -->
-                <div class="flex flex-col gap-8 lg:w-1/3">
-                    <article class="news-article bg-white rounded-lg shadow-md hover:shadow-xl transition-shadow duration-300">
-                        <img src="https://placehold.co/400x200/AAA/FFF?text=Lifestyle+News+2" alt="Article Cover" class="w-full h-40 object-cover rounded-t-lg">
-                        <div class="p-4">
-                            <h3 class="text-gray-900 leading-tight hover:text-blue-700 cursor-pointer text-base">Olivia Munn Reveals Battle with Trichotillomania</h3>
-                            <p class="dateline text-gray-600 text-xs"><em>*Los Angeles*</em></p>
-                            <p class="text-gray-700 text-sm">Actress Olivia Munn has publicly shared her struggle with Trichotillomania, a disorder characterized by the compulsive urge...</p>
-                        </div>
-                    </article>
-                    <article class="news-article bg-white rounded-lg shadow-md hover:shadow-xl transition-shadow duration-300">
-                        <img src="https://placehold.co/400x200/CCC/FFF?text=Lifestyle+News+3" alt="Article Cover" class="w-full h-40 object-cover rounded-t-lg">
-                        <div class="p-4">
-                            <h3 class="text-gray-900 leading-tight hover:text-blue-700 cursor-pointer text-base">Louis Vuitton Transforms Indian Auto-Rickshaw into Luxury Handbag</h3>
-                            <p class="dateline text-gray-600 text-xs"><em>*Paris/New Delhi*</em></p>
-                            <p class="text-gray-700 text-sm">Luxury fashion house Louis Vuitton has unveiled a unique auto-rickshaw inspired handbag...</p>
-                        </div>
-                    </article>
-                </div>
-            </div>
-        </section>
-
-        <!-- Gossips Section -->
-        <section id="gossips" class="category-section mb-12 pt-4">
-            <div class="flex justify-between items-center mb-8">
-                <h2 class="category-title text-gray-900 text-left">Gossips</h2>
-                <a href="#" class="bg-gray-800 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition duration-300">Read More</a>
-            </div>
-            <div class="flex flex-col lg:flex-row gap-8">
-                <!-- Featured Article -->
-                <article class="news-article bg-white rounded-lg shadow-md hover:shadow-xl transition-shadow duration-300 lg:w-2/3">
-                    <img src="https://placehold.co/800x400/AAA/FFF?text=Gossips+Featured" alt="Article Cover" class="w-full h-64 object-cover rounded-t-lg">
-                    <div class="p-6">
-                        <h3 class="text-gray-900 leading-tight hover:text-blue-700 cursor-pointer">Combs Trial: Jury Deliberations Underway, Partial Verdict Reached</h3>
-                        <p class="dateline text-gray-600"><em>*New York*</em></p>
-                        <p class="text-gray-700">The highly anticipated sex trafficking and racketeering trial of Sean "Diddy" Combs has seen its first day of jury deliberations, with the jury reportedly reaching a verdict on four of the five counts. However, they remain unable to agree on the crucial count of racketeering conspiracy, leaving the final outcome hanging in the balance and fueling intense public speculation.</p>
-                    </div>
-                </article>
-                <!-- Side Articles -->
-                <div class="flex flex-col gap-8 lg:w-1/3">
-                    <article class="news-article bg-white rounded-lg shadow-md hover:shadow-xl transition-shadow duration-300">
-                        <img src="https://placehold.co/400x200/CCC/FFF?text=Gossips+News+2" alt="Article Cover" class="w-full h-40 object-cover rounded-t-lg">
-                        <div class="p-4">
-                            <h3 class="text-gray-900 leading-tight hover:text-blue-700 cursor-pointer text-base">Musk and Trump Reignite Feud: Subsidies and Contracts at Risk?</h3>
-                            <p class="dateline text-gray-600 text-xs"><em>*Washington D.C.*</em></p>
-                            <p class="text-gray-700 text-sm">The long-standing feud between Elon Musk and Donald Trump has reignited, with the former president...</p>
-                        </div>
-                    </article>
-                    <article class="news-article bg-white rounded-lg shadow-md hover:shadow-xl transition-shadow duration-300">
-                        <img src="https://placehold.co/400x200/EEE/FFF?text=Gossips+News+3" alt="Article Cover" class="w-full h-40 object-cover rounded-t-lg">
-                        <div class="p-4">
-                            <h3 class="text-gray-900 leading-tight hover:text-blue-700 cursor-pointer text-base">Princess Kako of Japan Praised for Flying Economy</h3>
-                            <p class="dateline text-gray-600 text-xs"><em>*Brazil*</em></p>
-                            <p class="text-gray-700 text-sm">Japan's Princess Kako is making headlines after a viral video showed her flying economy class...</p>
-                        </div>
-                    </article>
-                </div>
-            </div>
-        </section>
+    <main class="container p-6 md:p-10" id="main-content">
+        <!-- Content will be dynamically loaded here by JavaScript -->
+        <div class="text-center text-gray-500 text-lg mt-20" id="loadingMessage">Loading articles...</div>
     </main>
 
     <footer class="bg-gray-900 text-white py-6 mt-10 rounded-t-lg">
         <div class="container mx-auto px-4 text-center">
-            <p class="text-sm">&copy; 2025 Lika. All rights reserved.</p>
+            <p class="text-sm">&copy; 2025 The Global Times. All rights reserved.</p>
         </div>
     </footer>
 
+    <!-- Add Article Modal Structure -->
+    <div id="addArticleModal" class="modal-overlay">
+        <div class="modal-content">
+            <button class="modal-close-btn" id="closeModalBtn">&times;</button>
+            <h2 class="text-center">Add New Article</h2>
+            <form id="addArticleForm">
+                <div class="modal-input-group">
+                    <div>
+                        <label for="articleCategory">Category:</label>
+                        <select id="articleCategory" required>
+                            <option value="">Select a Category</option>
+                            <option value="politics">Politics</option>
+                            <option value="defence">Defence</option>
+                            <option value="lifestyle">Lifestyle</option>
+                            <option value="gossips">Gossips</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label for="articleDateline">Dateline:</label>
+                        <input type="text" id="articleDateline" placeholder="e.g., *New York*" required>
+                    </div>
+                </div>
+
+                <label for="articleHeadline">Headline:</label>
+                <input type="text" id="articleHeadline" required>
+
+                <label for="articleImageUrl">Image URL:</label>
+                <input type="text" id="articleImageUrl" placeholder="e.g., https://placehold.co/400x200/FF5733/FFFFFF?text=New+Article" required>
+
+                <label for="articleSummary">Summary (approx. 30 words):</label>
+                <textarea id="articleSummary" required></textarea>
+
+                <label for="articleFullContent">Full Content:</label>
+                <textarea id="articleFullContent" required></textarea>
+
+                <div class="flex justify-end mt-4">
+                    <button type="button" class="btn-secondary" id="cancelAddArticleBtn">Cancel</button>
+                    <button type="submit" class="btn-primary">Add Article</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Button to open the Add Article Modal -->
+    <button id="openAddArticleModal" class="fixed bottom-8 right-8 bg-blue-600 text-white p-4 rounded-full shadow-lg hover:bg-blue-700 transition duration-300">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+        </svg>
+    </button>
+
+    <!-- Google Identity Services Library -->
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
     <script src="script.js"></script>
 </body>
 </html>

@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lika - Article Title</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="icon" href="/LikaImageONly.png" type="image/x-icon">
+    <link rel="stylesheet" href="style.css">
+    <style>
+        /* Custom styles for a newspaper-like feel */
+        .article-headline {
+            font-size: 2.8rem;
+            font-weight: bold;
+            line-height: 1.2;
+            margin-bottom: 1rem;
+            color: #1a1a1a;
+        }
+        .article-meta {
+            font-size: 0.9rem;
+            color: #666;
+            margin-bottom: 1.5rem;
+            font-style: italic;
+        }
+        .article-content p {
+            font-size: 1.1rem;
+            line-height: 1.8;
+            margin-bottom: 1rem;
+            text-align: justify;
+        }
+    </style>
+</head>
+<body class="bg-gray-100">
+    <header class="bg-gray-900 text-white py-6 shadow-lg rounded-b-lg">
+        <div class="container mx-auto px-4 relative flex flex-col items-center">
+            <!-- Logo centered at the top -->
+            <img src="/Logo.png" alt="Lika Logo" id="top_logo" class="mb-2 h-20">
+            <!-- Date positioned below the logo, centered -->
+            <p class="text-sm text-gray-400 mb-4">Wednesday, July 2, 2025</p>
+
+            <!-- Profile Picture/Name at Top Right -->
+            <div class="absolute top-5 right-10 flex items-center space-x-2 p-2 scale-104" id="profile">
+                <!-- Name on the left side of the profile picture -->
+                <span class="text-white text-sm font-semibold">John Doe</span>
+                <img src="https://placehold.co/40x40/FFFFFF/000000?text=User" alt="Profile Picture" class="w-10 h-10 rounded-full border-2 border-white">
+            </div>
+        </div>
+        <nav class="bg-gray-800 py-3 mt-4 rounded-b-lg">
+            <ul class="flex flex-wrap justify-center space-x-6 md:space-x-10">
+                <li><a href="index.html#politics" class="text-white hover:text-yellow-400 font-bold text-lg font-times transition duration-300 ease-in-out px-3 py-2 rounded-md">Politics</a></li>
+                <li><a href="index.html#defence" class="text-white hover:text-yellow-400 font-bold text-lg font-times transition duration-300 ease-in-out px-3 py-2 rounded-md">Defence</a></li>
+                <li><a href="index.html#lifestyle" class="text-white hover:text-yellow-400 font-bold font-times text-lg transition duration-300 ease-in-out px-3 py-2 rounded-md">Lifestyle</a></li>
+                <li><a href="index.html#gossips" class="text-white hover:text-yellow-400 font-bold font-times text-lg transition duration-300 ease-in-out px-3 py-2 rounded-md">Gossips</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main class="container p-6 md:p-10">
+        <article class="full-article">
+            <h1 class="article-headline">Trump's "Big, Beautiful Bill" Faces House Hurdle After Senate Pass</h1>
+            <p class="article-meta">By John Smith | *Washington D.C.* - July 2, 2025</p>
+
+            <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ966z8_von1xUFUX_uUllnJ4b-Yklk4NrUog&s" alt="Article Cover" class="w-full h-96 object-cover mb-8 rounded-lg shadow-md">
+
+            <div class="article-content">
+                <p>President Donald Trump's controversial "One Big Beautiful Bill Act" has narrowly passed the Republican-controlled Senate, sending it to the House of Representatives for a critical vote. The bill, which seeks to make permanent the 2017 tax cuts and introduce new tax breaks while also implementing deep spending cuts, has added an estimated $3.3 trillion to the national debt, drawing fierce criticism from opponents. Debates are expected to be heated in the House, where the outcome remains uncertain.</p>
+                <p>The legislation has been a cornerstone of the Trump administration's economic agenda, promising to stimulate growth through tax relief for corporations and individuals. However, critics argue that the bill disproportionately benefits the wealthy and will lead to an unsustainable increase in the national debt, potentially impacting future generations.</p>
+                <p>During the Senate's marathon voting session, several amendments were proposed and debated, but the core tenets of the bill remained intact. The narrow margin of victory in the Senate underscores the deep partisan divide over fiscal policy in the United States. House Speaker Nancy Pelosi has vowed to fight the bill, calling it a "giveaway to the rich" that will harm working families.</p>
+                <p>Economists are divided on the long-term effects of the bill. Supporters point to potential job creation and increased investment, while detractors warn of rising inflation and a widening wealth gap. The outcome of the House vote will be closely watched by global markets and will undoubtedly set the tone for the remainder of the legislative year.</p>
+                <p>In related news, discussions continue regarding the potential impact of the bill on international trade agreements. Some analysts suggest that certain provisions could lead to retaliatory tariffs from other nations, further complicating the global economic landscape. The administration, however, remains confident that the bill will ultimately strengthen the American economy and its position on the world stage.</p>
+            </div>
+        </article>
+
+        <!-- Back to Home Button -->
+        <div class="text-center mt-10">
+            <a href="index.html" class="bg-gray-800 text-white px-6 py-3 rounded-md hover:bg-blue-700 transition duration-300 inline-block">Back to Home</a>
+        </div>
+    </main>
+
+    <footer class="bg-gray-900 text-white py-6 mt-10 rounded-t-lg">
+        <div class="container mx-auto px-4 text-center">
+            <p class="text-sm">&copy; 2025 Lika. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>
