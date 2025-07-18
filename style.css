@@ -263,6 +263,8 @@ html {
     /* Space between elements */
     padding: 0.5rem;
     /* Some padding for the hover area */
+    right: -40%;
+    top: -5rem;
     border-radius: 8px;
     /* Rounded corners for the hover area */
     transition: background-color 0.3s ease;
