@@ -20,8 +20,8 @@ document.addEventListener('DOMContentLoaded', function() {
     let articlesData = [];
 
     // API Endpoint for the backend server
-    const API_BASE_URL = 'http://localhost:3000/api/articles'; // Ensure this matches your server.js port
-    const AUTH_API_URL = 'http://localhost:3000/api/auth/google';
+    const API_BASE_URL = 'https://lika.onrender.com/api/articles'; // Ensure this matches your server.js port
+    const AUTH_API_URL = 'https://lika.onrender.com/api/auth/google';
 
     // IMPORTANT: Replace with your actual Google Client ID from Google Cloud Console
     // This value needs to match the one configured in your Google Cloud Project for OAuth 2.0
