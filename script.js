@@ -49,7 +49,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // Function to update UI based on login status
     function updateAuthUI(user = null) {
         if (user && getAuthToken()) {
-            userStatusSpan.textContent = `Logged in as: ${user.name || user.email}`;
+            userStatusSpan.textContent = `${user.name || user.email}`;
             profilePictureImg.src = user.picture || 'https://placehold.co/40x40/FFFFFF/000000?text=User';
             loginButton.classList.add('hidden');
             logoutButton.classList.remove('hidden');
