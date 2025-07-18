@@ -19,12 +19,16 @@ document.addEventListener('DOMContentLoaded', function() {
     // Data array for articles
     let articlesData = [];
 
-    // API Endpoint for the backend server
-    const API_BASE_URL = 'https://lika.onrender.com/api/articles'; // Ensure this matches your server.js port
+    // IMPORTANT: Update these API Endpoints to your deployed Render backend URL
+    // If your frontend and backend are on the same Render service, use your app's URL.
+    // If you have separate Render services (e.g., one for frontend, one for backend API),
+    // use the backend service's URL here. Assuming your backend is also at lika.onrender.com.
+    const API_BASE_URL = 'https://lika.onrender.com/api/articles';
     const AUTH_API_URL = 'https://lika.onrender.com/api/auth/google';
 
     // IMPORTANT: Replace with your actual Google Client ID from Google Cloud Console
     // This value needs to match the one configured in your Google Cloud Project for OAuth 2.0
+    // It must be the Client ID for the "Web application" type.
     const GOOGLE_CLIENT_ID = '875578945883-b9ig8c0iojdr1opfnintrj9abtu42ef1.apps.googleusercontent.com'; // <--- REPLACE THIS WITH YOUR CLIENT ID
 
     // Function to get the JWT token from localStorage
@@ -61,20 +65,27 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Google Sign-In Initialization
     function initializeGoogleSignIn() {
-        // Initialize the Google Identity Services client
-        google.accounts.id.initialize({
-            client_id: GOOGLE_CLIENT_ID,
-            callback: handleCredentialResponse, // Function to call after successful login
-            auto_select: false // Set to true for automatic sign-in if user has a session
-        });
+        // Check if google.accounts.id is defined before initializing
+        if (typeof google !== 'undefined' && google.accounts && google.accounts.id) {
+            google.accounts.id.initialize({
+                client_id: GOOGLE_CLIENT_ID,
+                callback: handleCredentialResponse, // Function to call after successful login
+                auto_select: false // Set to true for automatic sign-in if user has a session
+            });
 
-        // Render the Google Login Button into the 'login-button' element
-        google.accounts.id.renderButton(
-            loginButton, // The HTML element to render the button into
-            { theme: "outline", size: "large", text: "signin_with", width: "200" } // Customization options
-        );
-        // Ensure the custom button is visible initially
-        loginButton.style.display = 'block';
+            // Render the Google Login Button into the 'login-button' element
+            google.accounts.id.renderButton(
+                loginButton, // The HTML element to render the button into
+                { theme: "outline", size: "large", text: "signin_with", width: "200" } // Customization options
+            );
+            // Ensure the custom button is visible initially
+            loginButton.style.display = 'block';
+        } else {
+            console.error("Google Identity Services library not loaded or initialized correctly.");
+            // Optionally, hide login button or show an error message to the user
+            loginButton.textContent = "Google Login Unavailable";
+            loginButton.disabled = true;
+        }
     }
 
     // Callback function for Google Sign-In
@@ -105,7 +116,7 @@ document.addEventListener('DOMContentLoaded', function() {
         } catch (error) {
             console.error('Login failed:', error);
             // Using alert for critical login failures, consider a custom modal for better UX
-            alert(`Login failed: ${error.message}`);
+            alert(`Login failed: ${error.message}. Please check your Google Cloud Console settings and backend server logs.`);
             updateAuthUI(null); // Ensure UI reflects logged out state
         }
     }
@@ -266,22 +277,22 @@ document.addEventListener('DOMContentLoaded', function() {
 
             if (categoryArticles.length === 0) {
                 categoryPageHtml += `<div class="col-span-full text-center text-gray-500 py-10">No news yet in the ${categoryId} category.</div>`;
-            } else {
-                // Sort articles by timestamp in descending order (newest first)
-                const sortedArticles = [...categoryArticles].sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
-                sortedArticles.forEach(article => {
-                    categoryPageHtml += `
-                        <article class="news-article bg-white rounded-lg shadow-md hover:shadow-xl transition-shadow duration-300" data-article-id="${article._id}"> <!-- Use _id from MongoDB -->
-                            <img src="${article.imageUrl}" alt="Article Cover" class="w-full h-48 object-cover rounded-t-lg article-trigger" onerror="this.onerror=null;this.src='https://placehold.co/400x200/cccccc/333333?text=Image+Not+Found';">
-                            <div class="p-6">
-                                <h3 class="text-gray-900 leading-tight hover:text-blue-700 cursor-pointer article-trigger">${article.headline}</h3>
-                                <p class="dateline text-gray-600"><em>${article.dateline}</em></p>
-                                <p class="text-gray-700">${article.fullContent}</p> <!-- Display full content here -->
-                            </div>
-                        </article>
-                    `;
-                });
-            }
+                } else {
+                    // Sort articles by timestamp in descending order (newest first)
+                    const sortedArticles = [...categoryArticles].sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+                    sortedArticles.forEach(article => {
+                        categoryPageHtml += `
+                            <article class="news-article bg-white rounded-lg shadow-md hover:shadow-xl transition-shadow duration-300" data-article-id="${article._id}"> <!-- Use _id from MongoDB -->
+                                <img src="${article.imageUrl}" alt="Article Cover" class="w-full h-48 object-cover rounded-t-lg article-trigger" onerror="this.onerror=null;this.src='https://placehold.co/400x200/cccccc/333333?text=Image+Not+Found';">
+                                <div class="p-6">
+                                    <h3 class="text-gray-900 leading-tight hover:text-blue-700 cursor-pointer article-trigger">${article.headline}</h3>
+                                    <p class="dateline text-gray-600"><em>${article.dateline}</em></p>
+                                    <p class="text-gray-700">${article.fullContent}</p> <!-- Display full content here -->
+                                </div>
+                            </article>
+                        `;
+                    });
+                }
 
             categoryPageHtml += `
                     </div>
