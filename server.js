@@ -4,7 +4,7 @@ require('dotenv').config(); // Load environment variables from .env file
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
-const path = require('path');
+const path = require('path'); // Keep path for other potential uses
 const { OAuth2Client } = require('google-auth-library');
 const jwt = require('jsonwebtoken');
 
@@ -158,12 +158,12 @@ app.post('/api/articles', authenticateToken, async (req, res) => {
     }
 });
 
-// Serve static files from the current directory (where index.html is)
-app.use(express.static(path.join(__dirname)));
+// Serve static files from the current directory (where server.js is)
+app.use(express.static('./'));
 
-// Catch-all for any other routes to serve index.html (for single-page applications)
+// Catch-all for any other routes to serve index.html
 app.get('*', (req, res) => {
-    res.sendFile(path.join(__dirname, 'index.html'));
+    res.sendFile('index.html', { root: './' });
 });
 
 
