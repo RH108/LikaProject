@@ -14,13 +14,14 @@
             <!-- Logo centered at the top -->
             <img src="/Logo.png" alt="Lika Logo" id="top_logo" class="mb-2 h-20">
             <!-- Date positioned below the logo, centered -->
-            <p class="text-sm text-gray-400 mb-4">Friday, July 18, 2025</p>
+            <p class="text-sm text-gray-400 mb-4">Wednesday, July 2, 2025</p>
 
             <!-- Profile Picture/Name and Login/Logout at Top Right -->
             <div class="absolute top-5 right-10 flex items-center space-x-2 p-2 scale-104" id="auth-section">
                 <span id="user-status" class="text-white text-sm font-semibold">Not Logged In</span>
                 <img id="profile-picture" src="https://placehold.co/40x40/FFFFFF/000000?text=User" alt="Profile Picture" class="w-10 h-10 rounded-full border-2 border-white">
-                <button id="login-button" class="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition duration-300 ml-4">Login with Google</button>
+                <!-- login-button will be rendered here by Google Identity Services JS -->
+                <button id="login-button" class="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition duration-300 ml-4 hidden">Login with Google</button>
                 <button id="logout-button" class="bg-red-600 text-white px-4 py-2 rounded-md hover:bg-red-700 transition duration-300 ml-4 hidden">Logout</button>
             </div>
         </div>
@@ -29,19 +30,74 @@
                 <li><a href="#politics" class="nav-link text-white hover:text-yellow-400 font-bold text-lg font-times transition duration-300 ease-in-out px-3 py-2 rounded-md">Politics</a></li>
                 <li><a href="#defence" class="nav-link text-white hover:text-yellow-400 font-bold text-lg font-times transition duration-300 ease-in-out px-3 py-2 rounded-md">Defence</a></li>
                 <li><a href="#lifestyle" class="nav-link text-white hover:text-yellow-400 font-bold font-times text-lg transition duration-300 ease-in-out px-3 py-2 rounded-md">Lifestyle</a></li>
-                <li><a href="#gossips" class="nav-link text-white hover:text-yellow-400 font-bold font-times text-lg transition duration-300 ease-in-out px-3 py-2 rounded-md">Gossips</a></li>
+                <li><a href="#gossips" class="text-white hover:text-yellow-400 font-bold font-times text-lg transition duration-300 ease-in-out px-3 py-2 rounded-md">Gossips</a></li>
             </ul>
         </nav>
     </header>
 
-    <main class="container p-6 md:p-10" id="main-content">
-        <!-- Content will be dynamically loaded here by JavaScript -->
-        <div class="text-center text-gray-500 text-lg mt-20" id="loadingMessage">Loading articles...</div>
+    <!-- Main Content Area -->
+    <main class="container p-6 md:p-10">
+        <!-- Login Prompt Container - displayed when not logged in -->
+        <div id="login-prompt-container" class="flex flex-col items-center justify-center min-h-[400px] text-center" style="display: none;">
+            <h2 class="text-2xl font-bold mb-4 text-gray-800">Please Log In to View News</h2>
+            <p class="text-gray-600 mb-6">Access to news articles requires authentication.</p>
+            <div id="google-login-button-container">
+                <!-- Google login button will be rendered here by script.js -->
+            </div>
+        </div>
+
+        <!-- News Content Sections - hidden initially, shown after login -->
+        <div id="news-content-sections" style="display: none;">
+            <div class="text-center text-gray-500 text-lg mt-20" id="loadingMessage">Loading articles...</div>
+            <!-- Politics Section -->
+            <section id="politics" class="category-section mb-12 pt-4">
+                <div class="flex justify-between items-center mb-8">
+                    <h2 class="category-title text-gray-900 text-left">Politics</h2>
+                    <button class="bg-gray-800 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition duration-300 read-more-category-btn" data-category-id="politics">Read More</button>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                    <!-- Articles will be dynamically loaded here -->
+                </div>
+            </section>
+
+            <!-- Defence Section -->
+            <section id="defence" class="category-section mb-12 pt-4">
+                <div class="flex justify-between items-center mb-8">
+                    <h2 class="category-title text-gray-900 text-left">Defence</h2>
+                    <button class="bg-gray-800 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition duration-300 read-more-category-btn" data-category-id="defence">Read More</button>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                    <!-- Articles will be dynamically loaded here -->
+                </div>
+            </section>
+
+            <!-- Lifestyle Section -->
+            <section id="lifestyle" class="category-section mb-12 pt-4">
+                <div class="flex justify-between items-center mb-8">
+                    <h2 class="category-title text-gray-900 text-left">Lifestyle</h2>
+                    <button class="bg-gray-800 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition duration-300 read-more-category-btn" data-category-id="lifestyle">Read More</button>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                    <!-- Articles will be dynamically loaded here -->
+                </div>
+            </section>
+
+            <!-- Gossips Section -->
+            <section id="gossips" class="category-section mb-12 pt-4">
+                <div class="flex justify-between items-center mb-8">
+                    <h2 class="category-title text-gray-900 text-left">Gossips</h2>
+                    <button class="bg-gray-800 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition duration-300 read-more-category-btn" data-category-id="gossips">Read More</button>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                    <!-- Articles will be dynamically loaded here -->
+                </div>
+            </section>
+        </div>
     </main>
 
     <footer class="bg-gray-900 text-white py-6 mt-10 rounded-t-lg">
         <div class="container mx-auto px-4 text-center">
-            <p class="text-sm">&copy; 2025 Lika. All rights reserved.</p>
+            <p class="text-sm">&copy; 2025 The Global Times. All rights reserved.</p>
         </div>
     </footer>
 

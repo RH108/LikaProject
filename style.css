@@ -250,3 +250,42 @@ html {
     max-width: 20%;
     max-height: auto;
 }
+
+/* Styles for logout button on hover */
+#auth-section {
+    position: relative;
+    /* Needed for absolute positioning of logout button */
+    display: flex;
+    /* Ensure flex behavior */
+    align-items: center;
+    /* Align items vertically */
+    gap: 0.5rem;
+    /* Space between elements */
+    padding: 0.5rem;
+    /* Some padding for the hover area */
+    border-radius: 8px;
+    /* Rounded corners for the hover area */
+    transition: background-color 0.3s ease;
+}
+
+#auth-section:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+    /* Slight background change on hover */
+}
+
+#auth-section #logout-button {
+    opacity: 0;
+    /* Initially hidden */
+    visibility: hidden;
+    /* Initially hidden */
+    transition: opacity 0.3s ease-in-out, visibility 0.3s ease-in-out;
+    margin-left: 1rem;
+    /* Space from profile picture */
+}
+
+#auth-section:hover #logout-button {
+    opacity: 1;
+    /* Show on hover */
+    visibility: visible;
+    /* Show on hover */
+}

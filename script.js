@@ -6,8 +6,9 @@ document.addEventListener('DOMContentLoaded', function() {
     // Auth elements
     const userStatusSpan = document.getElementById('user-status');
     const profilePictureImg = document.getElementById('profile-picture');
-    const loginButton = document.getElementById('login-button');
+    const loginButton = document.getElementById('login-button'); // This is the hidden div where Google button renders
     const logoutButton = document.getElementById('logout-button');
+    const authSection = document.getElementById('auth-section'); // For hover effect
 
     // Modal elements
     const addArticleModal = document.getElementById('addArticleModal');
@@ -16,19 +17,19 @@ document.addEventListener('DOMContentLoaded', function() {
     const cancelAddArticleBtn = document.getElementById('cancelAddArticleBtn');
     const addArticleForm = document.getElementById('addArticleForm');
 
+    // New elements for content visibility
+    const loginPromptContainer = document.getElementById('login-prompt-container');
+    const newsContentSections = document.getElementById('news-content-sections');
+    const googleLoginButtonContainer = document.getElementById('google-login-button-container'); // The div where Google button will be rendered
+
     // Data array for articles
     let articlesData = [];
 
-    // IMPORTANT: Update these API Endpoints to your deployed Render backend URL
-    // If your frontend and backend are on the same Render service, use your app's URL.
-    // If you have separate Render services (e.g., one for frontend, one for backend API),
-    // use the backend service's URL here. Assuming your backend is also at lika.onrender.com.
+    // API Endpoint for the backend server
     const API_BASE_URL = 'https://lika.onrender.com/api/articles';
     const AUTH_API_URL = 'https://lika.onrender.com/api/auth/google';
 
     // IMPORTANT: Replace with your actual Google Client ID from Google Cloud Console
-    // This value needs to match the one configured in your Google Cloud Project for OAuth 2.0
-    // It must be the Client ID for the "Web application" type.
     const GOOGLE_CLIENT_ID = '875578945883-b9ig8c0iojdr1opfnintrj9abtu42ef1.apps.googleusercontent.com'; // <--- REPLACE THIS WITH YOUR CLIENT ID
 
     // Function to get the JWT token from localStorage
@@ -46,54 +47,66 @@ document.addEventListener('DOMContentLoaded', function() {
         localStorage.removeItem('authToken');
     }
 
+    // Function to control content visibility (news sections and add article button)
+    function toggleContentVisibility(isVisible) {
+        if (isVisible) {
+            loginPromptContainer.style.display = 'none';
+            newsContentSections.style.display = 'block';
+            openAddArticleModalBtn.classList.remove('hidden');
+        } else {
+            loginPromptContainer.style.display = 'flex'; // Use flex to center content
+            newsContentSections.style.display = 'none';
+            openAddArticleModalBtn.classList.add('hidden');
+        }
+    }
+
     // Function to update UI based on login status
     function updateAuthUI(user = null) {
         if (user && getAuthToken()) {
             userStatusSpan.textContent = `${user.name || user.email}`;
             profilePictureImg.src = user.picture || 'https://placehold.co/40x40/FFFFFF/000000?text=User';
+            // loginButton in header is now just a placeholder for the Google button,
+            // which is rendered in googleLoginButtonContainer. Keep it hidden in header.
             loginButton.classList.add('hidden');
-            logoutButton.classList.remove('hidden');
-            openAddArticleModalBtn.classList.remove('hidden'); // Show add article button if logged in
+            logoutButton.classList.remove('hidden'); // Logout button is managed by CSS hover
+            toggleContentVisibility(true); // Show news content
+            fetchArticles(); // Fetch articles when logged in
         } else {
             userStatusSpan.textContent = 'Not Logged In';
             profilePictureImg.src = 'https://placehold.co/40x40/FFFFFF/000000?text=User';
-            loginButton.classList.remove('hidden');
-            logoutButton.classList.add('hidden');
-            openAddArticleModalBtn.classList.add('hidden'); // Hide add article button if logged out
+            loginButton.classList.remove('hidden'); // Show the login button in the header (though it's not the actual Google button)
+            logoutButton.classList.add('hidden'); // Hide logout button
+            toggleContentVisibility(false); // Hide news content, show login prompt
         }
     }
 
     // Google Sign-In Initialization
     function initializeGoogleSignIn() {
-        // Check if google.accounts.id is defined before initializing
         if (typeof google !== 'undefined' && google.accounts && google.accounts.id) {
             google.accounts.id.initialize({
                 client_id: GOOGLE_CLIENT_ID,
-                callback: handleCredentialResponse, // Function to call after successful login
-                auto_select: false // Set to true for automatic sign-in if user has a session
+                callback: handleCredentialResponse,
+                auto_select: false
             });
 
-            // Render the Google Login Button into the 'login-button' element
+            // Render the Google Login Button into the dedicated container in main content
             google.accounts.id.renderButton(
-                loginButton, // The HTML element to render the button into
-                { theme: "outline", size: "large", text: "signin_with", width: "200" } // Customization options
+                googleLoginButtonContainer, // Render into the new div in main
+                { theme: "outline", size: "large", text: "signin_with", width: "200" }
             );
-            // Ensure the custom button is visible initially
-            loginButton.style.display = 'block';
+            // The original loginButton in the header can remain hidden or be removed if not used for rendering
+            // loginButton.style.display = 'none'; // Ensure the header placeholder is not visible
         } else {
             console.error("Google Identity Services library not loaded or initialized correctly.");
-            // Optionally, hide login button or show an error message to the user
-            loginButton.textContent = "Google Login Unavailable";
-            loginButton.disabled = true;
+            loginPromptContainer.innerHTML = `<h2 class="text-2xl font-bold mb-4 text-red-600">Login Unavailable</h2><p class="text-red-500">Please check your internet connection or try again later.</p>`;
         }
     }
 
     // Callback function for Google Sign-In
     async function handleCredentialResponse(response) {
-        const idToken = response.credential; // This is the ID token from Google
+        const idToken = response.credential;
 
         try {
-            // Send the ID token to your backend for verification
             const backendResponse = await fetch(AUTH_API_URL, {
                 method: 'POST',
                 headers: {
@@ -108,25 +121,26 @@ document.addEventListener('DOMContentLoaded', function() {
             }
 
             const data = await backendResponse.json();
-            setAuthToken(data.token); // Store the JWT token received from your backend
-            updateAuthUI(data.user); // Update UI with user info from backend
+            setAuthToken(data.token);
+            updateAuthUI(data.user);
             console.log('Successfully logged in:', data.user);
-            fetchArticles(); // Re-fetch articles, potentially showing user-specific content
-
+            // Articles will be fetched by updateAuthUI -> fetchArticles
         } catch (error) {
             console.error('Login failed:', error);
-            // Using alert for critical login failures, consider a custom modal for better UX
             alert(`Login failed: ${error.message}. Please check your Google Cloud Console settings and backend server logs.`);
-            updateAuthUI(null); // Ensure UI reflects logged out state
+            updateAuthUI(null);
         }
     }
 
     // Logout function
     logoutButton.addEventListener('click', () => {
-        removeAuthToken(); // Clear the stored JWT token
-        updateAuthUI(null); // Update UI to logged out state
+        removeAuthToken();
+        updateAuthUI(null);
         console.log('Logged out.');
-        fetchArticles(); // Re-fetch articles (will now only show public articles)
+        // No need to fetch articles immediately after logout, as toggleContentVisibility(false) will hide them.
+        // If you want to clear the displayed articles immediately, you could clear articlesData and re-render.
+        // articlesData = [];
+        // renderHomePage(); // This would render empty sections with "No news yet"
     });
 
 
@@ -141,12 +155,12 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Function to fetch articles from the backend
     async function fetchArticles() {
-        loadingMessage.style.display = 'block'; // Show loading message
+        loadingMessage.style.display = 'block';
         try {
             const headers = {};
             const token = getAuthToken();
             if (token) {
-                headers['Authorization'] = `Bearer ${token}`; // Include JWT in Authorization header
+                headers['Authorization'] = `Bearer ${token}`;
             }
 
             const response = await fetch(API_BASE_URL, { headers });
@@ -157,17 +171,28 @@ document.addEventListener('DOMContentLoaded', function() {
             console.log("Articles fetched from backend:", articlesData);
         } catch (error) {
             console.error("Error fetching articles from backend:", error);
-            mainContentArea.innerHTML = `<div class="col-span-full text-center text-red-500 text-lg mt-20">Error loading articles: ${error.message}. Please ensure the backend server is running and accessible.</div>`;
-            articlesData = []; // Clear data on error
+            // Display error message within the news content area if it's visible
+            if (newsContentSections.style.display !== 'none') {
+                 newsContentSections.innerHTML = `<div class="col-span-full text-center text-red-500 text-lg mt-20">Error loading articles: ${error.message}. Please ensure the backend server is running and accessible.</div>`;
+            }
+            articlesData = [];
         } finally {
-            loadingMessage.style.display = 'none'; // Hide loading message
+            loadingMessage.style.display = 'none';
         }
-        renderHomePage(); // Re-render the home page with fetched data
+        renderHomePage();
     }
 
     // Function to render the home page content
     function renderHomePage() {
-        mainContentArea.classList.add('fade-out'); // Start fade-out
+        // Only render if news content is supposed to be visible
+        if (newsContentSections.style.display === 'none') {
+            return; // Don't render if not logged in
+        }
+
+        // Clear existing content before rendering new
+        newsContentSections.innerHTML = '';
+
+        mainContentArea.classList.add('fade-out');
         setTimeout(() => {
             let homePageHtml = '';
             const categories = ['politics', 'defence', 'lifestyle', 'gossips'];
@@ -185,7 +210,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 if (categoryArticles.length === 0) {
                     homePageHtml += `<div class="col-span-full text-center text-gray-500 py-10">No news yet in the ${category} category.</div>`;
                 } else {
-                    // Sort articles by timestamp in descending order (newest first)
                     const sortedArticles = [...categoryArticles].sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
                     sortedArticles.forEach(article => {
                         homePageHtml += `
@@ -206,27 +230,25 @@ document.addEventListener('DOMContentLoaded', function() {
                     </section>
                 `;
             });
-            mainContentArea.innerHTML = homePageHtml;
-            // originalMainContentHTML = homePageHtml; // No longer needed as content is always dynamic
-            mainContentArea.classList.remove('fade-out');
-            mainContentArea.classList.add('fade-in'); // Start fade-in
+            // Replace the content of newsContentSections, not mainContentArea directly
+            newsContentSections.innerHTML = homePageHtml;
+            newsContentSections.classList.remove('fade-out');
+            newsContentSections.classList.add('fade-in');
 
-            // Remove fade-in class after animation to prevent interference with other transitions
             setTimeout(() => {
-                mainContentArea.classList.remove('fade-in');
+                newsContentSections.classList.remove('fade-in');
             }, animationDuration);
 
-            attachEventListeners(); // Re-attach all event listeners
-        }, animationDuration); // Wait for fade-out to complete
+            attachEventListeners();
+        }, animationDuration);
     }
 
-    // Function to display a single article
+    // Function to display a single article (remains largely the same)
     function displaySingleArticle(articleId) {
-        // Find article by _id from MongoDB
         const article = articlesData.find(a => a._id === articleId);
         if (!article) return;
 
-        mainContentArea.classList.add('fade-out'); // Start fade-out
+        mainContentArea.classList.add('fade-out');
         setTimeout(() => {
             const articleHtml = `
                 <article class="full-article bg-white p-6 md:p-10 rounded-lg shadow-md">
@@ -247,27 +269,25 @@ document.addEventListener('DOMContentLoaded', function() {
 
             mainContentArea.innerHTML = articleHtml;
             mainContentArea.classList.remove('fade-out');
-            mainContentArea.classList.add('fade-in'); // Start fade-in
+            mainContentArea.classList.add('fade-in');
 
-            // Remove fade-in class after animation
             setTimeout(() => {
                 mainContentArea.classList.remove('fade-in');
             }, animationDuration);
 
-            // Add event listener to the "Back to Home" button
             document.getElementById('back-to-home-btn').addEventListener('click', () => {
-                renderHomePage(); // Go back to the dynamically rendered home page
-                window.scrollTo({ top: 0, behavior: 'smooth' }); // Scroll to top
+                renderHomePage();
+                window.scrollTo({ top: 0, behavior: 'smooth' });
             });
-            window.scrollTo({ top: 0, behavior: 'smooth' }); // Scroll to top after content loads
-        }, animationDuration); // Wait for fade-out to complete
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }, animationDuration);
     }
 
-    // Function to display all articles for a given category
+    // Function to display all articles for a given category (remains largely the same)
     function displayCategoryArticles(categoryId) {
         const categoryArticles = articlesData.filter(article => article.category === categoryId);
         
-        mainContentArea.classList.add('fade-out'); // Start fade-out
+        mainContentArea.classList.add('fade-out');
         setTimeout(() => {
             let categoryPageHtml = `
                 <section class="category-full-view mb-12 pt-4">
@@ -278,16 +298,15 @@ document.addEventListener('DOMContentLoaded', function() {
             if (categoryArticles.length === 0) {
                 categoryPageHtml += `<div class="col-span-full text-center text-gray-500 py-10">No news yet in the ${categoryId} category.</div>`;
                 } else {
-                    // Sort articles by timestamp in descending order (newest first)
                     const sortedArticles = [...categoryArticles].sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
                     sortedArticles.forEach(article => {
                         categoryPageHtml += `
-                            <article class="news-article bg-white rounded-lg shadow-md hover:shadow-xl transition-shadow duration-300" data-article-id="${article._id}"> <!-- Use _id from MongoDB -->
+                            <article class="news-article bg-white rounded-lg shadow-md hover:shadow-xl transition-shadow duration-300" data-article-id="${article._id}">
                                 <img src="${article.imageUrl}" alt="Article Cover" class="w-full h-48 object-cover rounded-t-lg article-trigger" onerror="this.onerror=null;this.src='https://placehold.co/400x200/cccccc/333333?text=Image+Not+Found';">
                                 <div class="p-6">
                                     <h3 class="text-gray-900 leading-tight hover:text-blue-700 cursor-pointer article-trigger">${article.headline}</h3>
                                     <p class="dateline text-gray-600"><em>${article.dateline}</em></p>
-                                    <p class="text-gray-700">${article.fullContent}</p> <!-- Display full content here -->
+                                    <p class="text-gray-700">${article.fullContent}</p>
                                 </div>
                             </article>
                         `;
@@ -303,46 +322,43 @@ document.addEventListener('DOMContentLoaded', function() {
             `;
             mainContentArea.innerHTML = categoryPageHtml;
             mainContentArea.classList.remove('fade-out');
-            mainContentArea.classList.add('fade-in'); // Start fade-in
+            mainContentArea.classList.add('fade-in');
 
-            // Remove fade-in class after animation
             setTimeout(() => {
                 mainContentArea.classList.remove('fade-in');
             }, animationDuration);
 
-            // Add event listener to the "Back to Home" button on category page
             document.getElementById('back-to-home-btn').addEventListener('click', () => {
-                renderHomePage(); // Go back to the dynamically rendered home page
-                window.scrollTo({ top: 0, behavior: 'smooth' }); // Scroll to top
+                renderHomePage();
+                window.scrollTo({ top: 0, behavior: 'smooth' });
             });
 
-            // Re-attach single article click listeners for articles on this category page
             document.querySelectorAll('.news-article .article-trigger').forEach(trigger => {
-                trigger.removeEventListener('click', handleArticleClick); // Prevent duplicates
+                trigger.removeEventListener('click', handleArticleClick);
                 trigger.addEventListener('click', handleArticleClick);
             });
-            window.scrollTo({ top: 0, behavior: 'smooth' }); // Scroll to top after content loads
-        }, animationDuration); // Wait for fade-out to complete
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }, animationDuration);
     }
 
     // Function to attach all necessary event listeners
     function attachEventListeners() {
         // Event listeners for individual article clicks (image and headline)
         document.querySelectorAll('.news-article .article-trigger').forEach(trigger => {
-            trigger.removeEventListener('click', handleArticleClick); // Prevent duplicates
+            trigger.removeEventListener('click', handleArticleClick);
             trigger.addEventListener('click', handleArticleClick);
         });
 
         // Event listeners for "Read More" buttons (category view)
         document.querySelectorAll('.read-more-category-btn').forEach(button => {
-            button.removeEventListener('click', handleReadMoreCategoryClick); // Prevent duplicates
+            button.removeEventListener('click', handleReadMoreCategoryClick);
             button.addEventListener('click', handleReadMoreCategoryClick);
         });
 
         // Smooth scrolling for navigation links
         const navLinks = document.querySelectorAll('nav ul li a');
         for (const link of navLinks) {
-            link.removeEventListener('click', handleNavLinkClick); // Prevent duplicates
+            link.removeEventListener('click', handleNavLinkClick);
             link.addEventListener('click', handleNavLinkClick);
         }
     }
@@ -373,13 +389,17 @@ document.addEventListener('DOMContentLoaded', function() {
         mainContentArea.classList.add('fade-out');
         setTimeout(() => {
             if (targetId.startsWith('#')) {
-                renderHomePage(); // Restore home page first
-                setTimeout(() => {
+                // Ensure news content is visible before attempting to scroll to a section
+                if (getAuthToken()) {
+                    toggleContentVisibility(true); // Ensure news sections are visible
                     const targetSection = document.querySelector(targetId);
                     if (targetSection) {
                         window.scrollTo({ top: targetSection.offsetTop - 70, behavior: 'smooth' });
                     }
-                }, 50); // Small delay for scroll after content is visible
+                } else {
+                    // If not logged in, just show the login prompt and don't scroll
+                    toggleContentVisibility(false);
+                }
             }
         }, animationDuration);
     }
@@ -388,11 +408,9 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Open Modal
     openAddArticleModalBtn.addEventListener('click', () => {
-        // Only allow opening if logged in
         if (getAuthToken()) {
             addArticleModal.classList.add('show');
         } else {
-            // Using alert for simplicity, consider a custom modal for better UX
             alert('Please log in to add articles.');
         }
     });
@@ -400,17 +418,17 @@ document.addEventListener('DOMContentLoaded', function() {
     // Close Modal
     closeModalBtn.addEventListener('click', () => {
         addArticleModal.classList.remove('show');
-        addArticleForm.reset(); // Clear form fields on close
+        addArticleForm.reset();
     });
 
     cancelAddArticleBtn.addEventListener('click', () => {
         addArticleModal.classList.remove('show');
-        addArticleForm.reset(); // Clear form fields on cancel
+        addArticleForm.reset();
     });
 
     // Handle form submission
     addArticleForm.addEventListener('submit', async function(event) {
-        event.preventDefault(); // Prevent default form submission
+        event.preventDefault();
 
         const category = document.getElementById('articleCategory').value;
         const headline = document.getElementById('articleHeadline').value;
@@ -419,7 +437,6 @@ document.addEventListener('DOMContentLoaded', function() {
         const summary = document.getElementById('articleSummary').value;
         const fullContent = document.getElementById('articleFullContent').value;
 
-        // Basic validation
         if (!category || !headline || !imageUrl || !dateline || !summary || !fullContent) {
             console.error('Please fill in all fields.');
             return;
@@ -432,7 +449,6 @@ document.addEventListener('DOMContentLoaded', function() {
             dateline: dateline,
             summary: summary,
             fullContent: fullContent,
-            // timestamp will be added by the server
         };
 
         try {
@@ -446,7 +462,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}` // Send the JWT token
+                    'Authorization': `Bearer ${token}`
                 },
                 body: JSON.stringify(newArticle),
             });
@@ -459,11 +475,11 @@ document.addEventListener('DOMContentLoaded', function() {
             const addedArticle = await response.json();
             console.log("Article added to backend:", addedArticle);
 
-            addArticleModal.classList.remove('show'); // Hide modal
-            addArticleForm.reset(); // Reset form
+            addArticleModal.classList.remove('show');
+            addArticleForm.reset();
 
             await fetchArticles(); // Re-fetch all articles to include the new one and re-render
-            window.scrollTo({ top: 0, behavior: 'smooth' }); // Scroll to top
+            window.scrollTo({ top: 0, behavior: 'smooth' });
         } catch (e) {
             console.error("Error adding article to backend: ", e);
             alert(`Error adding article: ${e.message}. Please ensure you are logged in and the backend server is running.`);
@@ -471,7 +487,13 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     // Initial checks and loads
-    updateAuthUI(null); // Set initial UI state (logged out)
+    // Check if user is already logged in (e.g., token exists from a previous session)
+    if (getAuthToken()) {
+        // In a real app, you'd verify this token with your backend to get actual user info.
+        // For this example, we'll use placeholder info for UI update.
+        updateAuthUI({ name: 'User', email: 'user@example.com', picture: 'https://placehold.co/40x40/FFFFFF/000000?text=User' });
+    } else {
+        updateAuthUI(null); // Set initial UI state (logged out), hides content
+    }
     initializeGoogleSignIn(); // Initialize Google Sign-In
-    fetchArticles(); // Initial load of data from the backend
 });
