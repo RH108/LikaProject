@@ -1,8 +1,13 @@
 document.addEventListener('DOMContentLoaded', function() {
     const mainContentArea = document.getElementById('main-content');
     const loadingMessage = document.getElementById('loadingMessage');
-    let originalMainContentHTML = ''; // Will store the initial state after dynamic rendering
     const animationDuration = 300; // milliseconds for fade animation
+
+    // Auth elements
+    const userStatusSpan = document.getElementById('user-status');
+    const profilePictureImg = document.getElementById('profile-picture');
+    const loginButton = document.getElementById('login-button');
+    const logoutButton = document.getElementById('logout-button');
 
     // Modal elements
     const addArticleModal = document.getElementById('addArticleModal');
@@ -16,26 +21,103 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // API Endpoint for the backend server
     const API_BASE_URL = 'http://localhost:3000/api/articles'; // Ensure this matches your server.js port
+    const AUTH_API_URL = 'http://localhost:3000/api/auth/google';
 
-    // Function to fetch articles from the backend
-    async function fetchArticles() {
-        loadingMessage.style.display = 'block'; // Show loading message
-        try {
-            const response = await fetch(API_BASE_URL);
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
-            }
-            articlesData = await response.json();
-            console.log("Articles fetched from backend:", articlesData);
-        } catch (error) {
-            console.error("Error fetching articles from backend:", error);
-            mainContentArea.innerHTML = `<div class="col-span-full text-center text-red-500 text-lg mt-20">Error loading articles. Please ensure the backend server is running and accessible.</div>`;
-            articlesData = []; // Clear data on error
-        } finally {
-            loadingMessage.style.display = 'none'; // Hide loading message
-        }
-        renderHomePage(); // Re-render the home page with fetched data
+    // IMPORTANT: Replace with your actual Google Client ID from Google Cloud Console
+    // This value needs to match the one configured in your Google Cloud Project for OAuth 2.0
+    const GOOGLE_CLIENT_ID = '875578945883-b9ig8c0iojdr1opfnintrj9abtu42ef1.apps.googleusercontent.com'; // <--- REPLACE THIS WITH YOUR CLIENT ID
+
+    // Function to get the JWT token from localStorage
+    function getAuthToken() {
+        return localStorage.getItem('authToken');
     }
+
+    // Function to set the JWT token in localStorage
+    function setAuthToken(token) {
+        localStorage.setItem('authToken', token);
+    }
+
+    // Function to remove the JWT token from localStorage
+    function removeAuthToken() {
+        localStorage.removeItem('authToken');
+    }
+
+    // Function to update UI based on login status
+    function updateAuthUI(user = null) {
+        if (user && getAuthToken()) {
+            userStatusSpan.textContent = `Logged in as: ${user.name || user.email}`;
+            profilePictureImg.src = user.picture || 'https://placehold.co/40x40/FFFFFF/000000?text=User';
+            loginButton.classList.add('hidden');
+            logoutButton.classList.remove('hidden');
+            openAddArticleModalBtn.classList.remove('hidden'); // Show add article button if logged in
+        } else {
+            userStatusSpan.textContent = 'Not Logged In';
+            profilePictureImg.src = 'https://placehold.co/40x40/FFFFFF/000000?text=User';
+            loginButton.classList.remove('hidden');
+            logoutButton.classList.add('hidden');
+            openAddArticleModalBtn.classList.add('hidden'); // Hide add article button if logged out
+        }
+    }
+
+    // Google Sign-In Initialization
+    function initializeGoogleSignIn() {
+        // Initialize the Google Identity Services client
+        google.accounts.id.initialize({
+            client_id: GOOGLE_CLIENT_ID,
+            callback: handleCredentialResponse, // Function to call after successful login
+            auto_select: false // Set to true for automatic sign-in if user has a session
+        });
+
+        // Render the Google Login Button into the 'login-button' element
+        google.accounts.id.renderButton(
+            loginButton, // The HTML element to render the button into
+            { theme: "outline", size: "large", text: "signin_with", width: "200" } // Customization options
+        );
+        // Ensure the custom button is visible initially
+        loginButton.style.display = 'block';
+    }
+
+    // Callback function for Google Sign-In
+    async function handleCredentialResponse(response) {
+        const idToken = response.credential; // This is the ID token from Google
+
+        try {
+            // Send the ID token to your backend for verification
+            const backendResponse = await fetch(AUTH_API_URL, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ credential: idToken }),
+            });
+
+            if (!backendResponse.ok) {
+                const errorData = await backendResponse.json();
+                throw new Error(`Authentication failed: ${errorData.message}`);
+            }
+
+            const data = await backendResponse.json();
+            setAuthToken(data.token); // Store the JWT token received from your backend
+            updateAuthUI(data.user); // Update UI with user info from backend
+            console.log('Successfully logged in:', data.user);
+            fetchArticles(); // Re-fetch articles, potentially showing user-specific content
+
+        } catch (error) {
+            console.error('Login failed:', error);
+            // Using alert for critical login failures, consider a custom modal for better UX
+            alert(`Login failed: ${error.message}`);
+            updateAuthUI(null); // Ensure UI reflects logged out state
+        }
+    }
+
+    // Logout function
+    logoutButton.addEventListener('click', () => {
+        removeAuthToken(); // Clear the stored JWT token
+        updateAuthUI(null); // Update UI to logged out state
+        console.log('Logged out.');
+        fetchArticles(); // Re-fetch articles (will now only show public articles)
+    });
+
 
     // Function to truncate text to a word limit
     function truncateText(text, wordLimit) {
@@ -44,6 +126,32 @@ document.addEventListener('DOMContentLoaded', function() {
             return words.slice(0, wordLimit).join(' ') + '...';
         }
         return text;
+    }
+
+    // Function to fetch articles from the backend
+    async function fetchArticles() {
+        loadingMessage.style.display = 'block'; // Show loading message
+        try {
+            const headers = {};
+            const token = getAuthToken();
+            if (token) {
+                headers['Authorization'] = `Bearer ${token}`; // Include JWT in Authorization header
+            }
+
+            const response = await fetch(API_BASE_URL, { headers });
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            articlesData = await response.json();
+            console.log("Articles fetched from backend:", articlesData);
+        } catch (error) {
+            console.error("Error fetching articles from backend:", error);
+            mainContentArea.innerHTML = `<div class="col-span-full text-center text-red-500 text-lg mt-20">Error loading articles: ${error.message}. Please ensure the backend server is running and accessible.</div>`;
+            articlesData = []; // Clear data on error
+        } finally {
+            loadingMessage.style.display = 'none'; // Hide loading message
+        }
+        renderHomePage(); // Re-render the home page with fetched data
     }
 
     // Function to render the home page content
@@ -64,13 +172,13 @@ document.addEventListener('DOMContentLoaded', function() {
                         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                 `;
                 if (categoryArticles.length === 0) {
-                    homePageHtml += `<div class-span-full text-center text-gray-500 py-10">No news yet in the ${category} category.</div>`;
+                    homePageHtml += `<div class="col-span-full text-center text-gray-500 py-10">No news yet in the ${category} category.</div>`;
                 } else {
                     // Sort articles by timestamp in descending order (newest first)
                     const sortedArticles = [...categoryArticles].sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
                     sortedArticles.forEach(article => {
                         homePageHtml += `
-                            <article class="news-article bg-white rounded-lg shadow-md hover:shadow-xl transition-shadow duration-300" data-article-id="${article.id}">
+                            <article class="news-article bg-white rounded-lg shadow-md hover:shadow-xl transition-shadow duration-300" data-article-id="${article._id}"> <!-- Use _id from MongoDB -->
                                 <img src="${article.imageUrl}" alt="Article Cover" class="w-full h-48 object-cover rounded-t-lg article-trigger" onerror="this.onerror=null;this.src='https://placehold.co/400x200/cccccc/333333?text=Image+Not+Found';">
                                 <div class="p-6">
                                     <h3 class="text-gray-900 leading-tight hover:text-blue-700 cursor-pointer article-trigger">${article.headline}</h3>
@@ -88,7 +196,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 `;
             });
             mainContentArea.innerHTML = homePageHtml;
-            originalMainContentHTML = homePageHtml; // Store the generated HTML as the original state
+            // originalMainContentHTML = homePageHtml; // No longer needed as content is always dynamic
             mainContentArea.classList.remove('fade-out');
             mainContentArea.classList.add('fade-in'); // Start fade-in
 
@@ -103,7 +211,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Function to display a single article
     function displaySingleArticle(articleId) {
-        const article = articlesData.find(a => a.id === articleId);
+        // Find article by _id from MongoDB
+        const article = articlesData.find(a => a._id === articleId);
         if (!article) return;
 
         mainContentArea.classList.add('fade-out'); // Start fade-out
@@ -162,7 +271,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 const sortedArticles = [...categoryArticles].sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
                 sortedArticles.forEach(article => {
                     categoryPageHtml += `
-                        <article class="news-article bg-white rounded-lg shadow-md hover:shadow-xl transition-shadow duration-300" data-article-id="${article.id}">
+                        <article class="news-article bg-white rounded-lg shadow-md hover:shadow-xl transition-shadow duration-300" data-article-id="${article._id}"> <!-- Use _id from MongoDB -->
                             <img src="${article.imageUrl}" alt="Article Cover" class="w-full h-48 object-cover rounded-t-lg article-trigger" onerror="this.onerror=null;this.src='https://placehold.co/400x200/cccccc/333333?text=Image+Not+Found';">
                             <div class="p-6">
                                 <h3 class="text-gray-900 leading-tight hover:text-blue-700 cursor-pointer article-trigger">${article.headline}</h3>
@@ -268,7 +377,13 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Open Modal
     openAddArticleModalBtn.addEventListener('click', () => {
-        addArticleModal.classList.add('show');
+        // Only allow opening if logged in
+        if (getAuthToken()) {
+            addArticleModal.classList.add('show');
+        } else {
+            // Using alert for simplicity, consider a custom modal for better UX
+            alert('Please log in to add articles.');
+        }
     });
 
     // Close Modal
@@ -306,14 +421,21 @@ document.addEventListener('DOMContentLoaded', function() {
             dateline: dateline,
             summary: summary,
             fullContent: fullContent,
-            timestamp: new Date().toISOString() // Add a timestamp
+            // timestamp will be added by the server
         };
 
         try {
+            const token = getAuthToken();
+            if (!token) {
+                alert('You must be logged in to add articles.');
+                return;
+            }
+
             const response = await fetch(API_BASE_URL, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}` // Send the JWT token
                 },
                 body: JSON.stringify(newArticle),
             });
@@ -333,11 +455,12 @@ document.addEventListener('DOMContentLoaded', function() {
             window.scrollTo({ top: 0, behavior: 'smooth' }); // Scroll to top
         } catch (e) {
             console.error("Error adding article to backend: ", e);
-            // Display a user-friendly error message
-            mainContentArea.innerHTML = `<div class="col-span-full text-center text-red-500 text-lg mt-20">Error adding article: ${e.message}. Please ensure the backend server is running and try again.</div>`;
+            alert(`Error adding article: ${e.message}. Please ensure you are logged in and the backend server is running.`);
         }
     });
 
-    // Initial load of data from the backend
-    fetchArticles();
+    // Initial checks and loads
+    updateAuthUI(null); // Set initial UI state (logged out)
+    initializeGoogleSignIn(); // Initialize Google Sign-In
+    fetchArticles(); // Initial load of data from the backend
 });
